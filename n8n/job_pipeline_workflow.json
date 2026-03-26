@@ -1,0 +1,233 @@
+{
+  "name": "Job Pipeline",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "024f52fb-ebed-4ecb-ace3-31a549f3aad1",
+      "name": "Start Pipeline",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./jobspy_scraper.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "608a1826-8fd5-4a16-a19a-1e137eb1d279",
+      "name": "1. Scrape Indeed"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./linkedin_scraper.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        128
+      ],
+      "id": "67f87d12-c2a2-4b6a-ae9d-8bf090cfbc06",
+      "name": "2. Scrape LinkedIn"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./arbeitnow_scraper.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -48
+      ],
+      "id": "52fffac9-e696-45e1-abd6-06c22461797e",
+      "name": "3. Scrape Arbeitnow"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./job_filter.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -32
+      ],
+      "id": "f4af04d2-7f41-464e-a980-a03c24035454",
+      "name": "4. Filter Jobs"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./job_scorer.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -32
+      ],
+      "id": "c664695f-0625-4dcb-a327-42703fc96a5c",
+      "name": "5. Score Jobs (DeepSeek)"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./cover_letter_generator.py --auto"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -32
+      ],
+      "id": "c2f4c287-8419-46ae-98e9-68fa21e986c5",
+      "name": "6. Submit Cover Letters"
+    },
+    {
+      "parameters": {
+        "command": "py -3.12 ./sheets_upload.py"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -32
+      ],
+      "id": "40505c38-ef7d-4a51-9fec-0c0f51ae8cdc",
+      "name": "7. Upload to Sheets"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        80,
+        -48
+      ],
+      "id": "d58596d5-2041-45be-abe9-603b2f413fbb",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Pipeline": {
+      "main": [
+        [
+          {
+            "node": "1. Scrape Indeed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3. Scrape Arbeitnow",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "2. Scrape LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Scrape Indeed": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Scrape LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "3. Scrape Arbeitnow": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "4. Filter Jobs": {
+      "main": [
+        [
+          {
+            "node": "5. Score Jobs (DeepSeek)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Score Jobs (DeepSeek)": {
+      "main": [
+        [
+          {
+            "node": "6. Submit Cover Letters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Submit Cover Letters": {
+      "main": [
+        [
+          {
+            "node": "7. Upload to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "4. Filter Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f7c784b8-f545-4983-9d8a-0bfc280effbf",
+  "meta": {
+    "instanceId": "ca95f51706722a50820473d8e6da8cacc9b5442d26649b07ed9729f778b40bbc"
+  },
+  "id": "XDipVurzmI0NDvEU",
+  "tags": []
+}
