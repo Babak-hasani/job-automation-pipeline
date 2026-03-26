@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────
+# job-automation-pipeline — .gitignore
+# ─────────────────────────────────────────────
+
+# ── Credentials (NEVER upload these) ──────────
+google_credentials.json
+.env
+*.json.key
+
+# ── Pipeline output files ──────────────────────
+# These are generated at runtime — no need to version them
+*.csv
+pending_batch.json
+
+# ── Personal documents ─────────────────────────
+CV_*.docx
+Cover_Letters/
+
+# ── Python ─────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ── OS files ───────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
